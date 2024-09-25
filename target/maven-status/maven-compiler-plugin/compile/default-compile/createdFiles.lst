@@ -1,0 +1,12 @@
+controllers\Estudiantes.class
+models\Curso.class
+modelsDAO\CursoDAO.class
+controllers\Cursos.class
+modelsDAO\EstudianteDAO.class
+models\Estudiante.class
+modelsDAO\EvaluacionDAO.class
+com\wilturcios\wgevaluacionpractica2\resources\JakartaEE10Resource.class
+controllers\Evaluaciones.class
+models\Evaluacion.class
+db\DBConnection.class
+com\wilturcios\wgevaluacionpractica2\JakartaRestConfiguration.class
