@@ -53,7 +53,9 @@
                         <td><%= estudiante.getTelefono() %></td>
                         <td><%= estudiante.getEdad() %></td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editarEstudiante(<%= estudiante.getId() %>)">Editar</button>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#miModal" onclick="seleccionarEstudiante(<%= estudiante.getId() %>)">
+                                Editar
+                            </button>
                             <button class="btn btn-danger btn-sm" onclick="eliminarEstudiante(<%= estudiante.getId() %>)">Eliminar</button>
                             <form action="/WGEvaluacionPractica2/estudiantes" method="GET" class="d-inline-block">
                                 <input type="hidden" name="evaluaciones" value="<%= estudiante.getId() %>">
@@ -67,9 +69,56 @@
             </tbody>
         </table>
     </div>
+            
+    <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel">Editar Estudiante</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-update-student" class="mb-4">
+                    <input type="hidden" id="estudiante-id"/>
+                    <div class="mb-3">
+                        <label for="nombre-update" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre-update" placeholder="Ingrese su nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edad-update" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="edad-update" placeholder="Ingrese su edad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono-update" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="telefono-update" placeholder="Ingrese su número de teléfono" required>
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="editarEstudiante()">Editar Estudiante</button>
+                </form>
+            </div>
+          </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
+        function seleccionarEstudiante(id) {
+            let url = "/WGEvaluacionPractica2/estudiantes/" + id; 
+            fetch(url)
+                .then(response => response.json())
+                .then(estudiante => {
+                    // Rellena los campos del modal con los datos de la evaluación.
+                    document.getElementById("estudiante-id").value = estudiante.id;
+                    document.getElementById("nombre-update").value = estudiante.nombre;
+                    document.getElementById("edad-update").value = estudiante.edad;
+                    document.getElementById("telefono-update").value = estudiante.telefono;
+                    
+                })
+                .catch(error => {
+                    console.error("Error al cargar el estudiante: ", error);
+                    alert("Error al cargar el estudiante seleccionado");
+                });
+        }
+        
         document.getElementById('formAgregarEstudiante').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -99,39 +148,41 @@
             .catch(error => console.error('Error:', error));
         });
 
-        // Función para editar estudiante
-        function editarEstudiante(id) {
-            console.log("El id es" + id);
-            const nombre = prompt('Ingrese el nuevo nombre');
-            const edad = prompt('Ingrese la nueva edad');
-            const telefono = prompt('Ingrese el nuevo teléfono');
+        function editarEstudiante() {
+            const id = document.getElementById('estudiante-id').value;
+            const nombre = document.getElementById('nombre-update').value;
+            const edad = document.getElementById('edad-update').value;
+            const telefono = document.getElementById('telefono-update').value;
+            
             const url = "/WGEvaluacionPractica2/estudiantes/" + id;
 
+            if (!nombre || !edad || !telefono) {
+                alert("Por favor, completa correctamente todos los campos.");
+                return;
+            }
+
             const estudianteActualizado = {
+                id: id,
                 nombre: nombre,
                 edad: edad,
                 telefono: telefono
             };
-            
-            console.log(url);
-            
+
             fetch(url, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(estudianteActualizado)
             })
             .then(response => {
                 if (response.ok) {
-                    alert('Estudiante actualizado exitosamente');
-                    window.location.reload();
+                    alert("Estudiante editado exitosamente");
+                    location.reload();
+                } else {
+                    alert("Error al editar el estudiante ");
                 }
-            })
-            .catch(error => console.error('Error:', error));
+            });
         }
 
-        // Función para eliminar estudiante
         function eliminarEstudiante(id) {
             if (confirm('¿Está seguro de que desea eliminar este estudiante?')) {
                 const url = "/WGEvaluacionPractica2/estudiantes/" + id;

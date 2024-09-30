@@ -37,7 +37,6 @@ public class Evaluaciones extends HttpServlet {
             String pathInfo = request.getPathInfo();
             String action = (pathInfo != null && !pathInfo.equals("/")) ? pathInfo.substring(1) : "/";
 
-            // Comprobar si es la ruta raíz "/"
             if (action.equals("/")) {
                 if (request.getParameter("list") != null) {
                     List<Evaluacion> consulta = evaluacionDAO.getAll();
@@ -84,7 +83,8 @@ public class Evaluaciones extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de evaluación inválido.");
                 }
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             e.printStackTrace();
             System.err.println("Mensaje de error detallado: " + e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Se produjo un error en el servidor.");

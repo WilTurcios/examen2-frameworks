@@ -28,50 +28,58 @@ public class Estudiantes extends HttpServlet {
     private Gson gson = new Gson();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+   protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         Gson gson = new Gson();
-            
+
         try {
             EstudianteDAO estudianteDAO = new EstudianteDAO();
             RequestDispatcher dispatcher = null;
 
             if (request.getParameter("list") != null) {
+                // Obtener la lista de estudiantes
                 List<Estudiante> consulta = estudianteDAO.getAll();
-
                 String estudiantesJson = gson.toJson(consulta);
 
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
-
                 response.getWriter().write(estudiantesJson);
-            } else if(request.getParameter("evaluaciones") != null) {
+            } else if (request.getParameter("evaluaciones") != null) {
+                // Obtener evaluaciones de un estudiante por ID
                 int studentId = Integer.parseInt(request.getParameter("evaluaciones"));
-                
-                
                 EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
-                
                 List<Evaluacion> studentEvaluations = evaluacionDAO.getEvaluationsByStudentId(studentId);
-                
                 request.setAttribute("studentEvaluations", studentEvaluations);
-                
                 dispatcher = request.getRequestDispatcher("Estudiantes/evaluaciones_estudiante.jsp");
-                
                 dispatcher.forward(request, response);
-                
-                
+            } else if (pathInfo != null && !pathInfo.equals("/")) {
+                // Obtener un estudiante por ID
+                try {
+                    int estudianteId = Integer.parseInt(pathInfo.substring(1)); // Se asume que el ID comienza después del "/"
+                    Estudiante estudiante = estudianteDAO.getById(estudianteId);
+                    if (estudiante != null) {
+                        String estudianteJson = gson.toJson(estudiante);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(estudianteJson);
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Estudiante no encontrado.");
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de estudiante inválido.");
+                }
             } else {
+                // Listar todos los estudiantes si no se especifica ninguna acción
                 List<Estudiante> consulta = estudianteDAO.getAll();
                 request.setAttribute("estudiantes", consulta);
                 dispatcher = request.getRequestDispatcher("Estudiantes/estudiantes.jsp");
-
                 dispatcher.forward(request, response);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Mensaje de error detallado: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Se produjo un error en el servidor.");
         }
     }
 
