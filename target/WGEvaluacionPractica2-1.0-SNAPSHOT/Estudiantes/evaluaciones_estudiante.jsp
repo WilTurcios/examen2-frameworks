@@ -1,8 +1,9 @@
 <%-- 
-    Document   : Evaluaciones.jsp
-    Created on : 23 sep 2024, 1:59:07 p.m.
-    Author     : Wilber
+    Document   : evaluaciones_estudiante
+    Created on : 28 sep 2024, 11:13:39 p.m.
+    Author     : Wilber's-Laptop
 --%>
+
 
 <%@page import="java.math.RoundingMode"%>
 <%@page import="java.math.BigDecimal"%>
@@ -22,44 +23,19 @@
 </head>
 <body>
     <jsp:include page="../components/menu.jsp" />
+    <%
+         List<Evaluacion> evaluaciones = (List<Evaluacion>) request.getAttribute("studentEvaluations");
+         
+         if(evaluaciones != null && evaluaciones.size() != 0) { 
+    %>
+    
     <div class="container mt-5">
-       <h1 class="text-center">Lista de Evaluaciones</h1>
-       <h2>Agregar nueva evaluación</h2>
-       <form id="form-evaluacion" class="mb-4">
-            <div class="mb-3">
-                <label for="estudiante" class="form-label">Seleccionar Estudiante</label>
-                <select class="form-control" id="estudiante" required>
-                    <option value="">Selecciona un estudiante</option>
-                    <!-- Aquí se llenarán las opciones dinámicamente -->
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="curso" class="form-label">Seleccionar Curso</label>
-                <select class="form-control" id="curso" required>
-                    <option value="">Selecciona un curso</option>
-                    <!-- Aquí se llenarán las opciones dinámicamente -->
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="fecha" class="form-label">Fecha de la Evaluación</label>
-                <input type="date" class="form-control" id="fecha" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="calificacion" class="form-label">Calificación</label>
-                <input type="number" class="form-control" id="calificacion" step="0.01" min="0" max="10" placeholder="Ejemplo: 8.5" required>
-            </div>
-
-            <button type="button" class="btn btn-success" onclick="agregarEvaluacion()">Agregar Evaluación</button>
-        </form>
-
+        <h1 class="text-center">Lista de Evaluaciones de <%= evaluaciones.get(0).getEstudiante().getNombre() %></h1>
+       
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Estudiante</th>
                     <th>Curso</th>
                     <th>Calificación</th>
                     <th>Fecha</th>
@@ -68,7 +44,7 @@
             </thead>
             <tbody>
                 <%
-                    List<Evaluacion> evaluaciones = (List<Evaluacion>) request.getAttribute("evaluaciones");
+                   
                     if (evaluaciones != null) {
                         for (Evaluacion evaluacion : evaluaciones) {
                             Estudiante estudiante = evaluacion.getEstudiante();
@@ -79,7 +55,6 @@
                 %>
                 <tr>
                     <td><%= evaluacion.getId() %></td>
-                    <td><%= estudiante.getNombre() %></td>
                     <td><%= curso.getNombre() %></td>
                     <td><%= redondeado %></td>
                     <td><%= evaluacion.getFecha()%></td>
@@ -216,5 +191,13 @@
             }
         }
     </script>
+    
+    <%
+        } else {
+    %>
+        <h1 class="text-center">No hay evaluaciones :(</h1>
+    <%
+        }
+    %>
 </body>
 </html>

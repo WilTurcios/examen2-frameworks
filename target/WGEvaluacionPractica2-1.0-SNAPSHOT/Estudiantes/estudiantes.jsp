@@ -1,5 +1,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="models.Estudiante"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -9,6 +10,7 @@
     <title>Estudiantes</title>
 </head>
 <body>
+    <jsp:include page="../components/menu.jsp" />
     <div class="container mt-5">
         <!-- Formulario para agregar estudiantes -->
         <h2>Formulario de Registro de Estudiantes</h2>
@@ -53,6 +55,10 @@
                         <td>
                             <button class="btn btn-warning btn-sm" onclick="editarEstudiante(<%= estudiante.getId() %>)">Editar</button>
                             <button class="btn btn-danger btn-sm" onclick="eliminarEstudiante(<%= estudiante.getId() %>)">Eliminar</button>
+                            <form action="/WGEvaluacionPractica2/estudiantes" method="GET">
+                                <input type="hidden" name="evaluaciones" value="<%= estudiante.getId() %>">
+                                <button class="btn btn-info btn-sm">Ver evaluaciones</button>
+                            </form>
                         </td>
                     </tr>
                 <%
@@ -64,7 +70,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
-        // Función para agregar nuevo estudiante
         document.getElementById('formAgregarEstudiante').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -96,17 +101,21 @@
 
         // Función para editar estudiante
         function editarEstudiante(id) {
+            console.log("El id es" + id);
             const nombre = prompt('Ingrese el nuevo nombre');
             const edad = prompt('Ingrese la nueva edad');
             const telefono = prompt('Ingrese el nuevo teléfono');
+            const url = "/WGEvaluacionPractica2/estudiantes/" + id;
 
             const estudianteActualizado = {
                 nombre: nombre,
                 edad: edad,
                 telefono: telefono
             };
-
-            fetch(`/WGEvaluacionPractica2/estudiantes/${id}`, {
+            
+            console.log(url);
+            
+            fetch(url, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -125,7 +134,9 @@
         // Función para eliminar estudiante
         function eliminarEstudiante(id) {
             if (confirm('¿Está seguro de que desea eliminar este estudiante?')) {
-                fetch(`/WGEvaluacionPractica2/estudiantes/${id}`, {
+                const url = "/WGEvaluacionPractica2/estudiantes/" + id;
+                
+                fetch(url, {
                     method: 'DELETE'
                 })
                 .then(response => {

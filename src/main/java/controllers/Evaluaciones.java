@@ -26,46 +26,45 @@ import modelsDAO.EvaluacionDAO;
 @WebServlet(name = "Evaluaciones", urlPatterns = {"/evaluaciones", "/evaluaciones/*"})
 public class Evaluaciones extends HttpServlet {
     private Gson gson = new Gson();
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Evaluaciones</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Evaluaciones at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
-
             try {
 
                 EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
                 RequestDispatcher dispatcher = null;
 
-                List<Evaluacion> consulta = evaluacionDAO.getAll();
-                request.setAttribute("evaluaciones", consulta);
-                dispatcher = request.getRequestDispatcher("Evaluaciones/evaluaciones.jsp");
-                dispatcher.forward(request, response);
+                
+                
+                if (request.getParameter("list") != null) {
+                    List<Evaluacion> consulta = evaluacionDAO.getAll();
+
+                    Gson gson = new Gson();
+                    String evaluacionesJson = gson.toJson(consulta);
+
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    response.getWriter().write(evaluacionesJson);
+                } else if(request.getParameter("estudiante") != null) {
+                    int studentId = Integer.parseInt(request.getParameter("estudiante"));
+                    List<Evaluacion> consulta = evaluacionDAO.getEvaluationsByStudentId(studentId);
+
+                    Gson gson = new Gson();
+                    String studentEvaluationsJson = gson.toJson(consulta);
+
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    response.getWriter().write(studentEvaluationsJson); 
+                } else {
+                    List<Evaluacion> consulta = evaluacionDAO.getAll();
+                    request.setAttribute("evaluaciones", consulta);
+                    dispatcher = request.getRequestDispatcher("Evaluaciones/evaluaciones.jsp");
+                    
+                    dispatcher.forward(request, response);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -101,10 +100,10 @@ public class Evaluaciones extends HttpServlet {
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
         String pathInfo = request.getPathInfo();
-//        if (pathInfo == null || pathInfo.equals("/")) {
-//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Código 400 - Bad Request
-//            return;
-//        }
+        if (pathInfo == null || pathInfo.equals("/")) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
         try {
             int id = Integer.parseInt(pathInfo.substring(1));
@@ -118,6 +117,7 @@ public class Evaluaciones extends HttpServlet {
             }
 
             evaluationDAO.delete(id);
+            
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         } catch (Exception e){
             System.err.println(e.getMessage());

@@ -10,6 +10,7 @@
 <%@ page import="models.Evaluacion" %>
 <%@ page import="models.Estudiante" %>
 <%@ page import="models.Curso" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,6 +21,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
+    <jsp:include page="../components/menu.jsp" />
     <div class="container mt-5">
        <h1 class="text-center">Lista de Evaluaciones</h1>
        <h2>Agregar nueva evaluación</h2>
@@ -195,13 +197,13 @@
         };
 
         function editarEvaluacion(id) {
-            // Aquí podrías abrir un modal o cambiar el formulario actual para editar la evaluación
-            // Similar al agregar, pero usando PUT y cargando datos actuales de la evaluación
+            
         }
 
         function eliminarEvaluacion(id) {
+            const url = "/WGEvaluacionPractica2/evaluaciones/" + id;
             if (confirm("¿Estás seguro de que deseas eliminar esta evaluación?")) {
-                fetch(`/WGEvaluacionPractica2/evaluaciones/${id}`, {
+                fetch(url, {
                     method: 'DELETE'
                 }).then(response => {
                     if (response.ok) {

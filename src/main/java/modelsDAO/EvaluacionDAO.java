@@ -30,16 +30,6 @@ public class EvaluacionDAO {
         dBConnection = new DBConnection();
     }
 
-    private void cerrarRecursos() {
-        try {
-            if (rs != null) rs.close();
-            if (ps != null) ps.close();
-            if (con != null) con.close();
-        } catch (Exception e) {
-            System.err.println("Error al cerrar recursos: " + e.getMessage());
-        }
-    }
-
     public List<Evaluacion> getAll() {
         List<Evaluacion> lista = new ArrayList<>();
         String sql = "SELECT * FROM evaluaciones e INNER JOIN cursos c  ON e.idCurso = c.id inner join estudiantes es ON e.idEstudiante = es.id;";
@@ -69,10 +59,42 @@ public class EvaluacionDAO {
             }
         } catch (Exception e) {
             System.err.println("Error al listar evaluaciones: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
+        return lista;
+    }
+    
+    public List<Evaluacion> getEvaluationsByStudentId(int student_id) {
+        List<Evaluacion> lista = new ArrayList<>();
+        String sql = "SELECT * FROM evaluaciones e INNER JOIN cursos c  ON e.idCurso = c.id inner join estudiantes es ON e.idEstudiante = es.id WHERE es.id = ?;";
 
+        try {
+            con = dBConnection.getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, student_id);
+            
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Evaluacion evaluacion = new Evaluacion(
+                        rs.getInt("id"),
+                        rs.getString("fecha"),
+                        rs.getFloat("calificacion"),
+                        new Estudiante(
+                                rs.getInt("idEstudiante"),
+                                rs.getString("nombre"),
+                                rs.getInt("edad"),
+                                rs.getString("telefono")
+                        ),
+                        new Curso(
+                                rs.getInt("idCurso"),
+                                rs.getString("curso")
+                        )
+                );
+                lista.add(evaluacion);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar evaluaciones: " + e.getMessage());
+        }
         return lista;
     }
 
@@ -105,9 +127,7 @@ public class EvaluacionDAO {
             }
         } catch (Exception e) {
             System.err.println("Error al obtener estudiante por ID: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
-        }
+        } 
 
         return evaluacion;
     }
@@ -134,10 +154,8 @@ public class EvaluacionDAO {
             }
         } catch (Exception e) {
             System.err.println("Error al agregar estudiante: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
-
+        
         return evaluacion;
     }
 
@@ -160,10 +178,8 @@ public class EvaluacionDAO {
             }
         } catch (Exception e) {
             System.err.println("Error al actualizar evaluacion: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
-        }
-
+        } 
+        
         return evaluacion;
     }
 
@@ -185,9 +201,7 @@ public class EvaluacionDAO {
             }
         } catch (Exception e) {
             System.err.println("Error al eliminar evaluacion: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
-        }
+        } 
 
         return eliminado;
     }

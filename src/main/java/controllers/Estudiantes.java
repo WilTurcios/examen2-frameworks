@@ -16,6 +16,8 @@ import java.util.List;
 import models.Estudiante;
 import modelsDAO.EstudianteDAO;
 import com.google.gson.Gson;
+import models.Evaluacion;
+import modelsDAO.EvaluacionDAO;
 
 /**
  *
@@ -24,45 +26,13 @@ import com.google.gson.Gson;
 @WebServlet(name = "Estudiantes", urlPatterns = {"/estudiantes", "/estudiantes/*"})
 public class Estudiantes extends HttpServlet {
     private Gson gson = new Gson();
-    
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Estudiantes</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Estudiantes at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pathInfo = request.getPathInfo();
+        Gson gson = new Gson();
+            
         try {
             EstudianteDAO estudianteDAO = new EstudianteDAO();
             RequestDispatcher dispatcher = null;
@@ -70,13 +40,27 @@ public class Estudiantes extends HttpServlet {
             if (request.getParameter("list") != null) {
                 List<Estudiante> consulta = estudianteDAO.getAll();
 
-                Gson gson = new Gson();
                 String estudiantesJson = gson.toJson(consulta);
 
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
 
                 response.getWriter().write(estudiantesJson);
+            } else if(request.getParameter("evaluaciones") != null) {
+                int studentId = Integer.parseInt(request.getParameter("evaluaciones"));
+                
+                
+                EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
+                
+                List<Evaluacion> studentEvaluations = evaluacionDAO.getEvaluationsByStudentId(studentId);
+                
+                request.setAttribute("studentEvaluations", studentEvaluations);
+                
+                dispatcher = request.getRequestDispatcher("Estudiantes/evaluaciones_estudiante.jsp");
+                
+                dispatcher.forward(request, response);
+                
+                
             } else {
                 List<Estudiante> consulta = estudianteDAO.getAll();
                 request.setAttribute("estudiantes", consulta);
@@ -91,14 +75,6 @@ public class Estudiantes extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -118,10 +94,10 @@ public class Estudiantes extends HttpServlet {
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
         String pathInfo = request.getPathInfo();
-//        if (pathInfo == null || pathInfo.equals("/")) {
-//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Código 400 - Bad Request
-//            return;
-//        }
+        if (pathInfo == null || pathInfo.equals("/")) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Código 400 - Bad Request
+            return;
+        }
 
         try {
             int id = Integer.parseInt(pathInfo.substring(1));
@@ -143,16 +119,18 @@ public class Estudiantes extends HttpServlet {
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-//        if (pathInfo == null || pathInfo.equals("/")) {
-//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            return;
-//        }
+        if (pathInfo == null || pathInfo.equals("/")) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         
         try {
             EstudianteDAO estudianteDAO = new EstudianteDAO();
-
+            
+            System.out.println("El id mandado por url es: " + pathInfo);
             int id = Integer.parseInt(pathInfo.substring(1));
             Estudiante studentExists = estudianteDAO.getById(id);
+            System.out.println("id estudiante: " + id);
 
             if (studentExists == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -160,22 +138,19 @@ public class Estudiantes extends HttpServlet {
             }
 
             Estudiante updatedStudent = gson.fromJson(request.getReader(), Estudiante.class);
+            
+            System.out.println("Nombre del estudiante actualizado: " + updatedStudent.getNombre());
             updatedStudent.setId(id);
             estudianteDAO.update(updatedStudent);
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error al actualizar estudiante: " + e.getMessage());
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }
