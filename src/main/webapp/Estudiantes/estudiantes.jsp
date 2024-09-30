@@ -27,7 +27,7 @@
                 <label for="telefono" class="form-label">Teléfono</label>
                 <input type="tel" class="form-control" id="telefono" placeholder="Ingrese su número de teléfono" required>
             </div>
-            <button type="submit" class="btn btn-primary">Enviar</button>
+            <button type="submit" class="btn btn-success">Enviar</button>
         </form>
 
         <!-- Tabla con los estudiantes -->
@@ -53,11 +53,11 @@
                         <td><%= estudiante.getTelefono() %></td>
                         <td><%= estudiante.getEdad() %></td>
                         <td>
-                            <button class="btn btn-warning btn-sm" onclick="editarEstudiante(<%= estudiante.getId() %>)">Editar</button>
+                            <button class="btn btn-primary btn-sm" onclick="editarEstudiante(<%= estudiante.getId() %>)">Editar</button>
                             <button class="btn btn-danger btn-sm" onclick="eliminarEstudiante(<%= estudiante.getId() %>)">Eliminar</button>
-                            <form action="/WGEvaluacionPractica2/estudiantes" method="GET">
+                            <form action="/WGEvaluacionPractica2/estudiantes" method="GET" class="d-inline-block">
                                 <input type="hidden" name="evaluaciones" value="<%= estudiante.getId() %>">
-                                <button class="btn btn-info btn-sm">Ver evaluaciones</button>
+                                <button class="btn btn-success btn-sm">Ver evaluaciones</button>
                             </form>
                         </td>
                     </tr>

@@ -29,14 +29,16 @@ public class Evaluaciones extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-            try {
+        throws ServletException, IOException {
+        try {
+            EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
+            RequestDispatcher dispatcher = null;
 
-                EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
-                RequestDispatcher dispatcher = null;
+            String pathInfo = request.getPathInfo();
+            String action = (pathInfo != null && !pathInfo.equals("/")) ? pathInfo.substring(1) : "/";
 
-                
-                
+            // Comprobar si es la ruta raíz "/"
+            if (action.equals("/")) {
                 if (request.getParameter("list") != null) {
                     List<Evaluacion> consulta = evaluacionDAO.getAll();
 
@@ -45,42 +47,50 @@ public class Evaluaciones extends HttpServlet {
 
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-
                     response.getWriter().write(evaluacionesJson);
-                } else if(request.getParameter("estudiante") != null) {
-                    int studentId = Integer.parseInt(request.getParameter("estudiante"));
-                    List<Evaluacion> consulta = evaluacionDAO.getEvaluationsByStudentId(studentId);
+                } else if (request.getParameter("estudiante") != null) {
+                    try {
+                        int studentId = Integer.parseInt(request.getParameter("estudiante"));
+                        List<Evaluacion> consulta = evaluacionDAO.getEvaluationsByStudentId(studentId);
 
-                    Gson gson = new Gson();
-                    String studentEvaluationsJson = gson.toJson(consulta);
+                        Gson gson = new Gson();
+                        String studentEvaluationsJson = gson.toJson(consulta);
 
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-
-                    response.getWriter().write(studentEvaluationsJson); 
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(studentEvaluationsJson);
+                    } catch (NumberFormatException e) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de estudiante inválido.");
+                    }
                 } else {
                     List<Evaluacion> consulta = evaluacionDAO.getAll();
                     request.setAttribute("evaluaciones", consulta);
                     dispatcher = request.getRequestDispatcher("Evaluaciones/evaluaciones.jsp");
-                    
                     dispatcher.forward(request, response);
                 }
+            } else {
+                // Manejar la solicitud para obtener evaluaciones por ID
+                try {
+                    int idEvaluacion = Integer.parseInt(action);
+                    Evaluacion consulta = evaluacionDAO.getById(idEvaluacion);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Mensaje de error detallado: " + e.getMessage());
+                    Gson gson = new Gson();
+                    String evaluacionJson = gson.toJson(consulta);
+
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(evaluacionJson);
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de evaluación inválido.");
+                }
             }
-        
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Mensaje de error detallado: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Se produjo un error en el servidor.");
+        }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
