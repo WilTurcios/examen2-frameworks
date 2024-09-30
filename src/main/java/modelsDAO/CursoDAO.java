@@ -26,16 +26,6 @@ public class CursoDAO {
         dBConnection = new DBConnection();
     }
     
-    private void cerrarRecursos() {
-        try {
-            if (rs != null) rs.close();
-            if (ps != null) ps.close();
-            if (con != null) con.close();
-        } catch (Exception e) {
-            System.err.println("Error al cerrar recursos: " + e.getMessage());
-        }
-    }
-    
     public List<Curso> getAll(){
          List<Curso> lista = new ArrayList<>();
         String sql = "SELECT * FROM cursos";
@@ -56,8 +46,6 @@ public class CursoDAO {
             System.out.println("Tamaño de la lista en cursos: " + lista.size());
         } catch (Exception e) {
             System.err.println("Error al listar cursos: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
 
         return lista;
@@ -80,8 +68,6 @@ public class CursoDAO {
             }
         } catch (Exception e) {
             System.err.println("Error al listar cursos: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
 
         return curso;
@@ -110,8 +96,6 @@ public class CursoDAO {
             System.out.println(agregado ? "curso agregado exitosamente." : "No se pudo agregar el curso.");
         } catch (Exception e) {
             System.err.println("Error al agregar curso: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
         
         return curso;
@@ -134,8 +118,6 @@ public class CursoDAO {
             System.out.println(actualizado ? "curso actualizado exitosamente." : "No se pudo actualizar el curso.");
         } catch (Exception e) {
             System.err.println("Error al actualizar curso: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
         
         return curso;
@@ -155,9 +137,8 @@ public class CursoDAO {
             System.out.println(eliminado ? "Curso eliminado exitosamente." : "No se pudo eliminar el curso.");
         } catch (Exception e) {
             System.err.println("Error al eliminar curso: " + e.getMessage());
-        } finally {
-            cerrarRecursos();
         }
+        
         return eliminado;
     }
 }

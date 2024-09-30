@@ -74,6 +74,7 @@
             <li><a href="${pageContext.request.contextPath}/index.jsp">Inicio</a></li>
             <li><a href="${pageContext.request.contextPath}/estudiantes">Estudiantes</a></li>
             <li><a href="${pageContext.request.contextPath}/evaluaciones">Evaluaciones</a></li>
+            <li><a href="${pageContext.request.contextPath}/cursos">Cursos</a></li>
         </ul>
     </nav>
 </header>

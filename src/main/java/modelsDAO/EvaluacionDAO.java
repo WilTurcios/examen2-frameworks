@@ -160,7 +160,7 @@ public class EvaluacionDAO {
     }
 
     public Evaluacion update(Evaluacion evaluacion) {
-        String sql = "UPDATE evaluaciones SET calificacion = ?, idEstudiante = ?, idCurso = ? WHERE id = ?";
+        String sql = "UPDATE evaluaciones SET calificacion = ?, idEstudiante = ?, idCurso = ?, fecha = ? WHERE id = ?";
 
         try {
             con = dBConnection.getConnection();
@@ -168,8 +168,8 @@ public class EvaluacionDAO {
             ps.setDouble(1, evaluacion.getCalificacion());
             ps.setInt(2, evaluacion.getEstudiante().getId());
             ps.setInt(3, evaluacion.getCurso().getId());
-            ps.setInt(4, evaluacion.getId());
-
+            ps.setString(4, evaluacion.getFecha());
+            ps.setInt(5, evaluacion.getId());
 
             int filasAfectadas = ps.executeUpdate();
 

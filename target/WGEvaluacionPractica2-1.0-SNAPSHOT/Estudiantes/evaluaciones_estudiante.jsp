@@ -1,7 +1,7 @@
 <%-- 
     Document   : evaluaciones_estudiante
     Created on : 28 sep 2024, 11:13:39 p.m.
-    Author     : Wilber's-Laptop
+    Author     : Wilber
 --%>
 
 
@@ -59,10 +59,10 @@
                     <td><%= redondeado %></td>
                     <td><%= evaluacion.getFecha()%></td>
                     <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" onclick="seleccionarEvaluacion(<%= evaluacion.getId() %>)">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#miModal" onclick="seleccionarEvaluacion(<%= evaluacion.getId() %>)">
                           Editar
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarEvaluacion(<%= evaluacion.getId() %>)">Eliminar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarEvaluacion(<%= evaluacion.getId() %>)">Eliminar</button>
                     </td>
                 </tr>
                 <%

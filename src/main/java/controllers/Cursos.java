@@ -25,7 +25,7 @@ import modelsDAO.EstudianteDAO;
  */
 @WebServlet(name = "Cursos", urlPatterns = {"/cursos", "/cursos/*"})
 public class Cursos extends HttpServlet {
-
+    Gson gson = new Gson();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -104,7 +104,16 @@ public class Cursos extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            CursoDAO cursoDAO = new CursoDAO();
+            
+            Curso newCourse = gson.fromJson(request.getReader(), Curso.class);
+            Curso course = cursoDAO.insert(newCourse);
+            
+            response.setStatus(HttpServletResponse.SC_CREATED); 
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+        }
     }
 
     /**

@@ -20,7 +20,16 @@
 </head>
 <body>
     <jsp:include page="../components/menu.jsp" />
+    
     <div class="container mt-5">
+        <h1>Agregar curso</h1>
+        <form id="form-curso" class="mb-4">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre del curso</label>
+                <input type="text" class="form-control" id="nombre" placeholder="Ej.: Desarrollo de Aplicaciones IOS" required>
+            </div>
+            <button type="button" class="btn btn-success" onclick="agregarCurso()">Agregar Curso</button>
+        </form>
         <h2>Listado de Cursos</h2>
         <table class="table table-striped table-bordered">
             <thead>
@@ -48,6 +57,36 @@
 
     <!-- Bootstrap JS (opcional, para componentes que requieran JavaScript) -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+       function agregarCurso() {
+            const nombre = document.getElementById('nombre').value;
+
+            if (!nombre) {
+                alert("Por favor, escriba un nombre de curso válido.");
+                return;
+            }
+            
+            fetch('/WGEvaluacionPractica2/cursos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify({
+                    nombre: nombre
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert("Curso agregado exitosamente");
+                    location.reload();
+                } else {
+                    alert("Error al agregar curso");
+                }
+            }).catch(error => {
+                console.error("Error en la petición:", error);
+                alert("Error al agregar curso");
+            });
+        } 
+    </script>
 </body>
 </html>
 

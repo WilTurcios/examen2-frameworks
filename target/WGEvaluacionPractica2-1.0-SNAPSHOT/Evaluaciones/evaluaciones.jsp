@@ -23,7 +23,6 @@
 <body>
     <jsp:include page="../components/menu.jsp" />
     <div class="container mt-5">
-       <h1 class="text-center">Lista de Evaluaciones</h1>
        <h2>Agregar nueva evaluación</h2>
        <form id="form-evaluacion" class="mb-4">
             <div class="mb-3">
@@ -55,6 +54,7 @@
             <button type="button" class="btn btn-success" onclick="agregarEvaluacion()">Agregar Evaluación</button>
         </form>
 
+       <h2>Datos de Evaluaciones</h2>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -84,10 +84,10 @@
                     <td><%= redondeado %></td>
                     <td><%= evaluacion.getFecha()%></td>
                     <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" onclick="seleccionarEvaluacion(<%= evaluacion.getId() %>)">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#miModal" onclick="seleccionarEvaluacion(<%= evaluacion.getId() %>)">
                           Editar
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarEvaluacion(<%= evaluacion.getId() %>)">Eliminar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarEvaluacion(<%= evaluacion.getId() %>)">Eliminar</button>
                     </td>
                 </tr>
                 <%
